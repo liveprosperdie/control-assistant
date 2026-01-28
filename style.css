@@ -7,8 +7,9 @@ body {
   background: #000;
   font-family: 'Inter', 'Segoe UI', sans-serif;
   color: #fff;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
   cursor: default;
 }
@@ -55,12 +56,12 @@ body::before {
   100% { transform: translate(50px, 50px); }
 }
 
-/* Main HUD with 3D effect */
+/* Main HUD - Responsive */
 .hud {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) perspective(1000px);
+  transform: translate(-50%, -50%);
   background: rgba(20, 20, 20, 0.95);
   backdrop-filter: blur(20px);
   border: 2px solid rgba(255, 255, 255, 0.1);
@@ -69,7 +70,8 @@ body::before {
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   padding: 45px 55px;
   text-align: center;
-  width: 550px;
+  width: 90%;
+  max-width: 550px;
   max-height: 90vh;
   overflow-y: auto;
   border-radius: 20px;
@@ -83,7 +85,6 @@ body::before {
     0 30px 80px rgba(0, 0, 0, 0.7),
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 0 100px rgba(255, 255, 255, 0.05);
-  transform: translate(-50%, -50%) perspective(1000px) translateZ(10px);
 }
 
 .hud-header {
@@ -129,14 +130,13 @@ body::before {
 h1 {
   margin: 0;
   letter-spacing: 16px;
-  font-size: 56px;
+  font-size: clamp(32px, 8vw, 56px);
   font-weight: 900;
   color: #fff;
   text-shadow: 
     0 0 40px rgba(255, 255, 255, 0.5),
     0 0 80px rgba(255, 255, 255, 0.3);
   animation: titleGlow 3s ease-in-out infinite;
-  position: relative;
 }
 
 @keyframes titleGlow {
@@ -153,7 +153,7 @@ h1 {
 }
 
 .subtitle {
-  font-size: 11px;
+  font-size: clamp(9px, 2vw, 11px);
   letter-spacing: 4px;
   color: rgba(255, 255, 255, 0.4);
   margin-top: 10px;
@@ -165,7 +165,7 @@ h1 {
   margin: 30px 0;
   font-weight: 700;
   letter-spacing: 5px;
-  font-size: 20px;
+  font-size: clamp(16px, 3.5vw, 20px);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 14px 28px;
   border-radius: 14px;
@@ -230,13 +230,15 @@ button {
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 14px;
+  font-size: clamp(12px, 2.5vw, 14px);
   font-weight: 700;
   letter-spacing: 3px;
   text-transform: uppercase;
   box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
+  width: 100%;
+  max-width: 250px;
 }
 
 button::before {
@@ -278,7 +280,7 @@ button span {
 
 #log {
   margin-top: 25px;
-  font-size: 13px;
+  font-size: clamp(11px, 2.2vw, 13px);
   color: rgba(255, 255, 255, 0.7);
   min-height: 20px;
   font-family: 'Courier New', monospace;
@@ -287,6 +289,7 @@ button span {
   background: rgba(255, 255, 255, 0.03);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  word-break: break-word;
 }
 
 #commandList {
@@ -301,7 +304,7 @@ button span {
 }
 
 .command-title {
-  font-size: 12px;
+  font-size: clamp(10px, 2vw, 12px);
   color: rgba(255, 255, 255, 0.6);
   margin-bottom: 20px;
   letter-spacing: 3px;
@@ -311,7 +314,7 @@ button span {
 
 .command-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   gap: 14px;
 }
 
@@ -328,6 +331,7 @@ button span {
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  min-height: 90px;
 }
 
 .command-item::before {
@@ -357,7 +361,7 @@ button span {
 }
 
 .cmd-icon {
-  font-size: 32px;
+  font-size: clamp(24px, 5vw, 32px);
   margin-bottom: 10px;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
   transition: transform 0.3s;
@@ -368,20 +372,20 @@ button span {
 }
 
 .cmd-text {
-  font-size: 11px;
+  font-size: clamp(9px, 1.8vw, 11px);
   color: rgba(255, 255, 255, 0.8);
   font-weight: 600;
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
-/* Camera feed with cool border */
+/* Camera feed - Responsive */
 video {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-  width: 260px;
-  height: 195px;
+  bottom: 20px;
+  right: 20px;
+  width: clamp(180px, 30vw, 260px);
+  height: clamp(135px, 22.5vw, 195px);
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 18px;
   box-shadow: 
@@ -404,11 +408,11 @@ canvas {
   display: none;
 }
 
-/* Wave indicator with glow */
+/* Wave indicator - Responsive */
 .wave-ring {
   position: fixed;
-  bottom: 125px;
-  right: 140px;
+  bottom: calc(20px + clamp(135px, 22.5vw, 195px) / 2 - 35px);
+  right: calc(20px + clamp(180px, 30vw, 260px) / 2 - 35px);
   width: 70px;
   height: 70px;
   border: 4px solid rgba(255, 255, 255, 0.8);
@@ -440,26 +444,25 @@ canvas {
   }
 }
 
-/* Audio visualizer bars - more dynamic */
+/* Audio visualizer - Responsive */
 .audio-bars {
   position: fixed;
-  bottom: 35px;
-  left: 35px;
+  bottom: 25px;
+  left: 25px;
   display: flex;
-  gap: 10px;
+  gap: clamp(6px, 1.5vw, 10px);
   align-items: flex-end;
-  height: 60px;
+  height: clamp(40px, 8vw, 60px);
   z-index: 1000;
 }
 
 .bar {
-  width: 6px;
+  width: clamp(4px, 1vw, 6px);
   height: 20px;
   background: linear-gradient(to top, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.9));
   border-radius: 3px;
   animation: audioWave 1s ease-in-out infinite;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  transition: all 0.3s;
 }
 
 .bar:nth-child(1) { animation-delay: 0s; }
@@ -475,7 +478,7 @@ canvas {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
   }
   50% { 
-    height: 55px; 
+    height: clamp(35px, 7vw, 55px); 
     opacity: 1;
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
   }
@@ -484,8 +487,8 @@ canvas {
 /* Floating orbs */
 .corner-decoration {
   position: fixed;
-  width: 100px;
-  height: 100px;
+  width: clamp(60px, 12vw, 100px);
+  height: clamp(60px, 12vw, 100px);
   background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
@@ -537,7 +540,7 @@ canvas {
   }
 }
 
-/* Scrollbar styling */
+/* Scrollbar */
 .hud::-webkit-scrollbar {
   width: 6px;
 }
@@ -550,23 +553,101 @@ canvas {
 .hud::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
-  transition: background 0.3s;
 }
 
 .hud::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
 }
 
-/* Mouse trail effect */
-body::after {
-  content: '';
-  position: fixed;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0;
-  transition: opacity 0.3s;
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+  .hud {
+    padding: 30px 25px;
+    width: 95%;
+  }
+  
+  h1 {
+    letter-spacing: 8px;
+  }
+  
+  .command-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .corner-decoration {
+    display: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .hud {
+    padding: 25px 20px;
+    border-radius: 16px;
+  }
+  
+  h1 {
+    letter-spacing: 4px;
+  }
+  
+  .status-bar {
+    font-size: 9px;
+    letter-spacing: 2px;
+  }
+  
+  #status {
+    letter-spacing: 2px;
+    padding: 10px 16px;
+  }
+  
+  button {
+    letter-spacing: 1px;
+  }
+  
+  .command-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .command-item {
+    padding: 14px 8px;
+    min-height: 80px;
+  }
+}
+
+/* Landscape mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hud {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin: 20px auto;
+  }
+  
+  body {
+    overflow-y: auto;
+  }
+  
+  video {
+    position: relative;
+    bottom: auto;
+    right: auto;
+    margin: 20px auto;
+    display: block;
+  }
+  
+  .wave-ring {
+    display: none;
+  }
+  
+  .audio-bars {
+    position: relative;
+    margin: 20px auto;
+    justify-content: center;
+  }
 }
