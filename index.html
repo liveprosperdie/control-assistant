@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CONTROL</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Animated background grid -->
+  <div class="grid-bg"></div>
+  
+  <!-- Corner decorations -->
+  <div class="corner-decoration top-left"></div>
+  <div class="corner-decoration top-right"></div>
+  <div class="corner-decoration bottom-left"></div>
+  <div class="corner-decoration bottom-right"></div>
+
+  <div class="hud">
+    <div class="hud-header">
+      <div class="status-bar">
+        <span class="status-dot"></span>
+        <span class="status-text">SYSTEM</span>
+      </div>
+      <h1>CONTROL</h1>
+      <div class="subtitle">Voice & Motion Assistant</div>
+    </div>
+    
+    <div id="status" class="idle">IDLE</div>
+    <button id="startBtn"><span>INITIALIZE</span></button>
+    <div id="log">System offline</div>
+    
+    <div id="commandList" class="hidden">
+      <div class="command-title">◢ AVAILABLE COMMANDS ◣</div>
+      <div class="command-grid">
+        <div class="command-item">
+          <span class="cmd-icon">📁</span>
+          <span class="cmd-text">files</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">📊</span>
+          <span class="cmd-text">dashboard</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">📧</span>
+          <span class="cmd-text">email</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">📅</span>
+          <span class="cmd-text">calendar</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">🎵</span>
+          <span class="cmd-text">music</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">💬</span>
+          <span class="cmd-text">chat</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">📺</span>
+          <span class="cmd-text">youtube</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">💻</span>
+          <span class="cmd-text">github</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">🌤️</span>
+          <span class="cmd-text">weather</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">📰</span>
+          <span class="cmd-text">news</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">🗺️</span>
+          <span class="cmd-text">maps</span>
+        </div>
+        <div class="command-item">
+          <span class="cmd-icon">🕐</span>
+          <span class="cmd-text">time</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <video id="camera" autoplay muted playsinline></video>
+  <canvas id="motionCanvas"></canvas>
+
+  <div id="waveIndicator" class="wave-ring"></div>
+
+  <!-- Audio visualizer bars -->
+  <div class="audio-bars">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
