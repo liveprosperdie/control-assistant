@@ -491,6 +491,9 @@ function handleCommand(text) {
       // Clean up common words
       website = website.replace(/website|site|dot com|\.com/gi, '').trim();
       
+      // Remove all spaces (speech recognition adds spaces in website names)
+      website = website.replace(/\s+/g, '');
+      
       if (website.length > 2) {
         // Add .com if no extension
         if (!website.includes('.')) {
