@@ -27,17 +27,36 @@ const SpeechRecognition =
 
 let recognition;
 let isRecognitionActive = false;
+let recognitionPaused = false;
 
 function speak(text) {
+  // Pause recognition while speaking
+  recognitionPaused = true;
+  
   const utter = new SpeechSynthesisUtterance(text);
   utter.rate = 1;
   utter.pitch = 1;
+  
+  utter.onend = () => {
+    // Wait 3 seconds after speaking before listening again
+    setTimeout(() => {
+      recognitionPaused = false;
+    }, 3000);
+  };
+  
+  utter.onerror = () => {
+    // Resume listening even if speech fails
+    setTimeout(() => {
+      recognitionPaused = false;
+    }, 3000);
+  };
+  
   speechSynthesis.speak(utter);
 }
 
 function log(text) {
   logEl.textContent = text;
-  console.log(`[MOVOX] ${text}`);
+  console.log(`[CONTROL] ${text}`);
 }
 
 // ================== VOICE LOGIC ==================
@@ -58,6 +77,12 @@ function startSpeech() {
   };
 
   recognition.onresult = (event) => {
+    // Ignore results if recognition is paused (assistant just spoke)
+    if (recognitionPaused) {
+      console.log("Ignoring input - recognition paused");
+      return;
+    }
+    
     const text =
       event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
 
@@ -97,7 +122,7 @@ function startSpeech() {
 
   recognition.onend = () => {
     isRecognitionActive = false;
-    // Auto-restart if we're still initialized and not blocked by permissions
+    // Auto-restart if we're still initialized
     if (currentState !== STATE.UNINITIALIZED) {
       restartRecognition();
     }
@@ -118,7 +143,6 @@ function restartRecognition() {
       try {
         recognition.start();
       } catch (e) {
-        // Silently fail if already started or permission denied
         console.error("Failed to restart recognition:", e);
       }
     }
@@ -278,7 +302,7 @@ function activate(source) {
     if (currentState === STATE.ACTIVATED) {
       transitionTo(STATE.LISTENING_FOR_COMMAND);
     }
-  }, 2500); // Wait for greeting to finish
+  }, 2500);
 }
 
 // ================== COMMANDS ==================
@@ -481,6 +505,15 @@ startBtn.onclick = async () => {
   log("Starting system...");
 
   try {
+    // Check if browser supports required features
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error("Camera not supported in this browser");
+    }
+    
+    if (!SpeechRecognition) {
+      throw new Error("Voice recognition not supported in this browser");
+    }
+
     await startCamera();
     startSpeech();
     
@@ -491,13 +524,20 @@ startBtn.onclick = async () => {
       log(`System online - Welcome ${userName}!`);
       speak(`Welcome ${userName}. Say control or show your palm to activate me.`);
     } else {
-      log("System online - Say 'control' or wave");
+      log("System online - Say 'control' or show palm");
     }
   } catch (err) {
-    log("Initialization failed");
+    log(`Error: ${err.message}`);
     console.error(err);
     startBtn.disabled = false;
     startBtn.textContent = "RETRY";
     currentState = STATE.UNINITIALIZED;
+    
+    // Show helpful error message
+    if (err.message.includes("Camera")) {
+      alert("Camera access is required. Please allow camera permissions and use HTTPS.");
+    } else if (err.message.includes("Voice")) {
+      alert("Voice recognition not supported. Please use Chrome or Edge browser.");
+    }
   }
 };
