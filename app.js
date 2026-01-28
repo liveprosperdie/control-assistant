@@ -494,12 +494,12 @@ function handleCommand(text) {
       // Clean up common words
       website = website.replace(/website|site|dotcom/gi, '');
       
-      // Remove .com if already said, we'll add it back
-      website = website.replace(/\.com$/gi, '');
+      // Remove .com or com if already said, we'll add it back
+      website = website.replace(/\.com$|com$/gi, '');
       
       if (website.length > 2) {
-        // Always add .com
-        website = website + '.com';
+        // Always add com
+        website = website + 'com';
         
         // Add https://
         website = 'https://' + website;
