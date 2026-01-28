@@ -488,22 +488,21 @@ function handleCommand(text) {
     if (websiteMatch && websiteMatch[1]) {
       let website = websiteMatch[1].trim();
       
-      // Clean up common words
-      website = website.replace(/website|site|dot com|\.com/gi, '').trim();
-      
-      // Remove all spaces (speech recognition adds spaces in website names)
+      // Remove all spaces first (speech recognition adds spaces in website names)
       website = website.replace(/\s+/g, '');
       
+      // Clean up common words
+      website = website.replace(/website|site|dotcom/gi, '');
+      
+      // Remove .com if already said, we'll add it back
+      website = website.replace(/\.com$/gi, '');
+      
       if (website.length > 2) {
-        // Add .com if no extension
-        if (!website.includes('.')) {
-          website = website + '.com';
-        }
+        // Always add .com
+        website = website + '.com';
         
-        // Add https:// if not present
-        if (!website.startsWith('http')) {
-          website = 'https://' + website;
-        }
+        // Add https://
+        website = 'https://' + website;
         
         window.open(website, "_blank");
         speak(`Opening ${websiteMatch[1]}`);
