@@ -477,9 +477,50 @@ function handleCommand(text) {
   // Help
   if (text.includes("help")) {
     speak(
-      "You can say: open files, dashboard, email, calendar, chat GPT, youtube, github, weather of any city, news, maps, play music, what time is it, what's the date, or help"
+      "You can say: open files, dashboard, email, calendar, chat GPT, youtube, github, weather of any city, news, maps, play music, what time is it, what's the date, open any website, search anything, or help"
     );
     return;
+  }
+
+  // Open any website - "open [website name]"
+  if (text.includes("open") && !text.match(/files|dashboard|email|calendar|github|news|maps/)) {
+    const websiteMatch = text.match(/open\s+(.+)/i);
+    if (websiteMatch && websiteMatch[1]) {
+      let website = websiteMatch[1].trim();
+      
+      // Clean up common words
+      website = website.replace(/website|site|dot com|\.com/gi, '').trim();
+      
+      if (website.length > 2) {
+        // Add .com if no extension
+        if (!website.includes('.')) {
+          website = website + '.com';
+        }
+        
+        // Add https:// if not present
+        if (!website.startsWith('http')) {
+          website = 'https://' + website;
+        }
+        
+        window.open(website, "_blank");
+        speak(`Opening ${websiteMatch[1]}`);
+        return;
+      }
+    }
+  }
+
+  // Search anything - "search [query]"
+  if (text.includes("search") || text.includes("google")) {
+    const searchMatch = text.match(/(?:search|google)\s+(.+)/i);
+    if (searchMatch && searchMatch[1]) {
+      const query = searchMatch[1].trim();
+      
+      if (query.length > 2) {
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, "_blank");
+        speak(`Searching for ${query}`);
+        return;
+      }
+    }
   }
 
   // Unrecognized command
