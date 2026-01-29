@@ -63,7 +63,7 @@ function log(text) {
 function startSpeech() {
   if (!SpeechRecognition) {
     log("Speech recognition not supported");
-    return;
+    throw new Error("Voice recognition not supported");
   }
 
   recognition = new SpeechRecognition();
@@ -74,6 +74,7 @@ function startSpeech() {
   recognition.onstart = () => {
     isRecognitionActive = true;
     log("Voice recognition active");
+    console.log("[CONTROL] Voice recognition started successfully");
   };
 
   recognition.onresult = (event) => {
@@ -87,6 +88,7 @@ function startSpeech() {
       event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
 
     log(`Heard: "${text}"`);
+    console.log(`[CONTROL] Recognized: "${text}"`);
 
     // Wake word detection (only in IDLE state)
     if (currentState === STATE.IDLE && text.includes("control")) {
@@ -108,6 +110,7 @@ function startSpeech() {
     if (event.error === "not-allowed") {
       log("Microphone permission denied");
       isRecognitionActive = false;
+      alert("Microphone permission denied. Please allow microphone access and refresh the page.");
       return;
     }
     
@@ -116,12 +119,14 @@ function startSpeech() {
       restartRecognition();
     } else {
       log(`Voice error: ${event.error}`);
+      console.error(`[CONTROL] Voice error: ${event.error}`);
       restartRecognition();
     }
   };
 
   recognition.onend = () => {
     isRecognitionActive = false;
+    console.log("[CONTROL] Voice recognition ended, restarting...");
     // Auto-restart if we're still initialized
     if (currentState !== STATE.UNINITIALIZED) {
       restartRecognition();
@@ -130,9 +135,11 @@ function startSpeech() {
 
   try {
     recognition.start();
+    console.log("[CONTROL] Starting voice recognition...");
   } catch (e) {
     console.error("Failed to start recognition:", e);
     log("Voice recognition failed to start");
+    throw e;
   }
 }
 
@@ -152,6 +159,7 @@ function restartRecognition() {
 // ================== CAMERA MOTION ==================
 async function startCamera() {
   try {
+    log("Requesting camera permission...");
     const stream = await navigator.mediaDevices.getUserMedia({ 
       video: { width: 640, height: 480 } 
     });
@@ -160,12 +168,19 @@ async function startCamera() {
     video.onloadedmetadata = () => {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-      log("Camera active");
+      log("Camera active - Motion detection ready");
+      console.log("[CONTROL] Camera started successfully");
       requestAnimationFrame(detectMotion);
+    };
+    
+    video.onerror = (err) => {
+      console.error("[CONTROL] Video error:", err);
+      log("Camera error");
     };
   } catch (err) {
     log("Camera access denied");
     console.error("Camera error:", err);
+    throw new Error(`Camera access failed: ${err.message}`);
   }
 }
 
@@ -548,16 +563,24 @@ startBtn.onclick = async () => {
   log("Starting system...");
 
   try {
-    // Check if browser supports required features
+    // Check browser compatibility
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      throw new Error("Camera not supported in this browser");
+      throw new Error("Camera not supported. Please use Chrome or Edge browser.");
     }
     
     if (!SpeechRecognition) {
-      throw new Error("Voice recognition not supported in this browser");
+      throw new Error("Voice recognition not supported. Please use Chrome or Edge browser.");
     }
 
+    // Check if running on HTTPS or localhost
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+      log("Warning: Camera/Mic require HTTPS");
+    }
+
+    log("Requesting camera access...");
     await startCamera();
+    
+    log("Starting voice recognition...");
     startSpeech();
     
     transitionTo(STATE.IDLE);
@@ -568,19 +591,30 @@ startBtn.onclick = async () => {
       speak(`Welcome ${userName}. Say control or show your palm to activate me.`);
     } else {
       log("System online - Say 'control' or show palm");
+      speak("System online. Say control or show your palm to activate me.");
     }
   } catch (err) {
     log(`Error: ${err.message}`);
-    console.error(err);
+    console.error("Initialization error:", err);
     startBtn.disabled = false;
     startBtn.textContent = "RETRY";
     currentState = STATE.UNINITIALIZED;
     
-    // Show helpful error message
-    if (err.message.includes("Camera")) {
-      alert("Camera access is required. Please allow camera permissions and use HTTPS.");
+    // Show detailed error message
+    let errorMsg = "Initialization failed. ";
+    
+    if (err.name === "NotAllowedError" || err.message.includes("permission")) {
+      errorMsg += "Please allow camera and microphone permissions. Click the lock icon in the address bar to grant permissions.";
+    } else if (err.message.includes("Camera")) {
+      errorMsg += "Camera access failed. Make sure no other app is using the camera.";
     } else if (err.message.includes("Voice")) {
-      alert("Voice recognition not supported. Please use Chrome or Edge browser.");
+      errorMsg += "Voice recognition not supported. Please use Chrome or Edge browser.";
+    } else if (err.message.includes("HTTPS")) {
+      errorMsg += "Camera/Mic require HTTPS. Please access via https:// URL.";
+    } else {
+      errorMsg += err.message;
     }
+    
+    alert(errorMsg);
   }
 };
